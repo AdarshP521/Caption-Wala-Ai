@@ -17,6 +17,7 @@ const GeneratePhotoCaptionsInputSchema = z.object({
     .describe(
       'A photo to generate captions for, as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' 
     ),
+  style: z.string().describe('The desired style for the captions (e.g., witty, poetic, casual).').optional().default('default'),
 });
 export type GeneratePhotoCaptionsInput = z.infer<typeof GeneratePhotoCaptionsInputSchema>;
 
@@ -35,7 +36,11 @@ const prompt = ai.definePrompt({
   output: {schema: GeneratePhotoCaptionsOutputSchema},
   prompt: `You are a creative social media manager who is exceptional at generating captions for photos.
 
-  Generate multiple captions (5) for the following photo. Respond as a JSON array.
+  Generate multiple captions (5) for the following photo. 
+  {{#if style}}
+  The style of the captions should be {{style}}.
+  {{/if}}
+  Respond as a JSON array.
 
   Photo: {{media url=photoDataUri}}
   `,

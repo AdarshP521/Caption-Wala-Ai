@@ -24,6 +24,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -35,32 +42,17 @@ export function CaptionGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [style, setStyle] = useState<string>("default");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
-      reader.onloadend = async () => {
+      reader.onloadend = () => {
         const dataUri = reader.result as string;
         setPhotoPreview(dataUri);
-        setCaptions([]);
-        setSelectedCaption(null);
-        setIsLoading(true);
-
-        const result = await getCaptions({ photoDataUri: dataUri });
-
-        setIsLoading(false);
-        if ("error" in result) {
-          toast({
-            variant: "destructive",
-            title: "Something went wrong",
-            description: result.error,
-          });
-          setPhotoPreview(null); // Clear preview on error
-        } else {
-          setCaptions(result.captions);
-        }
+        generateCaptions(dataUri, style);
       };
       reader.readAsDataURL(file);
     } else {
@@ -69,6 +61,29 @@ export function CaptionGenerator() {
         title: "Invalid file type",
         description: "Please upload an image file.",
       });
+    }
+  };
+
+  const generateCaptions = async (dataUri: string, captionStyle: string) => {
+    setCaptions([]);
+    setSelectedCaption(null);
+    setIsLoading(true);
+
+    const result = await getCaptions({
+      photoDataUri: dataUri,
+      style: captionStyle === "default" ? undefined : captionStyle,
+    });
+
+    setIsLoading(false);
+    if ("error" in result) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: result.error,
+      });
+      // Don't clear preview on re-generation error
+    } else {
+      setCaptions(result.captions);
     }
   };
 
@@ -97,11 +112,19 @@ export function CaptionGenerator() {
     }
   };
 
+  const handleStyleChange = (newStyle: string) => {
+    setStyle(newStyle);
+    if (photoPreview) {
+      generateCaptions(photoPreview, newStyle);
+    }
+  };
+
   const resetState = () => {
     setPhotoPreview(null);
     setCaptions([]);
     setSelectedCaption(null);
     setIsLoading(false);
+    setStyle("default");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -132,6 +155,22 @@ export function CaptionGenerator() {
                   fill
                   className="object-cover rounded-lg shadow-md"
                 />
+              </div>
+               <div className="space-y-2">
+                <Label htmlFor="style-select">Caption Style</Label>
+                <Select value={style} onValueChange={handleStyleChange}>
+                  <SelectTrigger id="style-select" className="w-full">
+                    <SelectValue placeholder="Select a style" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">Default</SelectItem>
+                    <SelectItem value="witty">Witty</SelectItem>
+                    <SelectItem value="poetic">Poetic</SelectItem>
+                    <SelectItem value="casual">Casual</SelectItem>
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="bold">Bold</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <Button onClick={resetState} variant="outline" className="w-full">
                 Upload Another Photo
