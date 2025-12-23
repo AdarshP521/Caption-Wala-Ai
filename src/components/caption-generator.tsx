@@ -222,6 +222,7 @@ export function CaptionGenerator() {
 
   const captionStyles = [
     { value: 'default', label: 'Default' },
+    { value: 'free', label: 'Free' },
     { value: 'witty', label: 'Witty' },
     { value: 'poetic', label: 'Poetic' },
     { value: 'casual', label: 'Casual' },
@@ -257,7 +258,7 @@ export function CaptionGenerator() {
               </div>
                <div className="space-y-2">
                 <Label>Caption Style</Label>
-                <RadioGroup value={style} onValueChange={handleStyleChange} className="grid grid-cols-2 gap-2">
+                <RadioGroup value={style} onValueChange={handleStyleChange} className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                   {captionStyles.map(({ value, label }) => (
                     <div key={value} className="flex items-center space-x-2">
                       <RadioGroupItem value={value} id={`style-${value}`} />
