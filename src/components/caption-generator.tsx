@@ -200,8 +200,8 @@ export function CaptionGenerator() {
           ) : (
             <div
               className={cn(
-                "w-full h-full border-2 border-dashed rounded-lg flex flex-col items-center justify-center text-center p-8 cursor-pointer hover:border-primary hover:bg-accent transition-colors",
-                isDragging && "border-primary bg-accent",
+                "w-full h-full border-2 border-dashed rounded-lg flex flex-col items-center justify-center text-center p-8 cursor-pointer hover:border-primary hover:bg-accent/10 transition-colors",
+                isDragging && "border-primary bg-accent/10",
                 isUploading && "pointer-events-none"
               )}
               onClick={() => fileInputRef.current?.click()}
@@ -280,7 +280,7 @@ export function CaptionGenerator() {
                     {captions.map((caption, index) => (
                       <div
                         key={index}
-                        className="flex items-start space-x-3 p-3 rounded-md hover:bg-accent transition-colors"
+                        className="flex items-start space-x-3 p-3 rounded-md hover:bg-accent/10 transition-colors"
                       >
                         <RadioGroupItem value={caption} id={`c${index}`} />
                         <Label
