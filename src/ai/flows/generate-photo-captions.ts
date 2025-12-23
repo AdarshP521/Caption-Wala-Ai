@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -36,11 +37,12 @@ const prompt = ai.definePrompt({
   output: {schema: GeneratePhotoCaptionsOutputSchema},
   prompt: `You are a creative social media manager who is exceptional at generating captions for photos.
 
-  Generate multiple captions (5) for the following photo. 
+  Generate 5 captions for the following photo. 
   {{#if style}}
   The style of the captions should be {{style}}.
   {{/if}}
-  Respond as a JSON array.
+
+  Analyze the photo and generate captions based on its content.
 
   Photo: {{media url=photoDataUri}}
   `,
