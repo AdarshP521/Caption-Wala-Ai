@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -43,17 +44,31 @@ export function CaptionGenerator() {
   const [isCopied, setIsCopied] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [style, setStyle] = useState<string>("default");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith("image/")) {
+      setUploadProgress(0);
+      setIsUploading(true);
       const reader = new FileReader();
+      
+      reader.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(progress);
+        }
+      };
+      
       reader.onloadend = () => {
         const dataUri = reader.result as string;
         setPhotoPreview(dataUri);
+        setIsUploading(false);
         generateCaptions(dataUri, style);
       };
+      
       reader.readAsDataURL(file);
     } else {
       toast({
@@ -125,6 +140,8 @@ export function CaptionGenerator() {
     setSelectedCaption(null);
     setIsLoading(false);
     setStyle("default");
+    setUploadProgress(0);
+    setIsUploading(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -180,7 +197,8 @@ export function CaptionGenerator() {
             <div
               className={cn(
                 "w-full h-full border-2 border-dashed rounded-lg flex flex-col items-center justify-center text-center p-8 cursor-pointer hover:border-primary hover:bg-accent transition-colors",
-                isDragging && "border-primary bg-accent"
+                isDragging && "border-primary bg-accent",
+                isUploading && "pointer-events-none"
               )}
               onClick={() => fileInputRef.current?.click()}
               onDragEnter={() => setIsDragging(true)}
@@ -191,13 +209,23 @@ export function CaptionGenerator() {
               }}
               onDrop={onDrop}
             >
-              <UploadCloud className="w-12 h-12 text-muted-foreground mb-4" />
-              <p className="font-semibold text-foreground">
-                Click or drag & drop photo
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Maximum file size: 5MB
-              </p>
+              {isUploading ? (
+                <div className="w-full max-w-xs space-y-4">
+                  <p className="font-semibold text-foreground">Uploading...</p>
+                  <Progress value={uploadProgress} className="w-full" />
+                  <p className="text-sm text-muted-foreground">{uploadProgress}%</p>
+                </div>
+              ) : (
+                <>
+                  <UploadCloud className="w-12 h-12 text-muted-foreground mb-4" />
+                  <p className="font-semibold text-foreground">
+                    Click or drag & drop photo
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Maximum file size: 5MB
+                  </p>
+                </>
+              )}
             </div>
           )}
         </div>
