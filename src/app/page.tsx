@@ -8,8 +8,8 @@ export default function Home() {
           Caption Wala AI
         </h1>
         <p className="mt-3 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Never run out of words. Upload your photo and let our AI generate the
-          perfect caption for you.
+          Feed our AI your pixels, and get fire captions in return. It's
+          science, basically.
         </p>
       </header>
       <main className="w-full">
