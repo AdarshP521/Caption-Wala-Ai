@@ -18,7 +18,7 @@ const GeneratePhotoCaptionsInputSchema = z.object({
     .describe(
       'A photo to generate captions for, as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' 
     ),
-  style: z.string().describe('The desired style for the captions (e.g., witty, poetic, casual).').optional().default('default'),
+  style: z.string().describe('The desired style for the captions (e.g., witty, poetic, casual).').optional(),
 });
 export type GeneratePhotoCaptionsInput = z.infer<typeof GeneratePhotoCaptionsInputSchema>;
 
@@ -59,3 +59,5 @@ const generatePhotoCaptionsFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

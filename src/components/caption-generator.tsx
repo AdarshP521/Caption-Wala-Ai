@@ -222,7 +222,6 @@ export function CaptionGenerator() {
 
   const captionStyles = [
     { value: 'default', label: 'Default' },
-    { value: 'free', label: 'Free' },
     { value: 'witty', label: 'Witty' },
     { value: 'poetic', label: 'Poetic' },
     { value: 'casual', label: 'Casual' },
@@ -407,3 +406,5 @@ export function CaptionGenerator() {
     </Card>
   );
 }
+
+    
