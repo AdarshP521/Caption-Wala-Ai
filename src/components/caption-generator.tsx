@@ -196,7 +196,7 @@ export function CaptionGenerator() {
                 Click or drag & drop photo
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                Let AI find the words.
+                Maximum file size: 5MB
               </p>
             </div>
           )}
