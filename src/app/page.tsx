@@ -8,8 +8,7 @@ export default function Home() {
           Caption Wala AI
         </h1>
         <p className="mt-3 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Feed our AI your pixels, and get fire captions in return. It's
-          science, basically.
+          Feed our AI your pixels, and get fire captions in return.
         </p>
       </header>
       <main className="w-full">
