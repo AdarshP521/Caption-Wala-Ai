@@ -24,17 +24,31 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+
+function InstagramIcon(props: React.ComponentProps<'svg'>) {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        {...props}
+      >
+        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+      </svg>
+    );
+  }
 
 export function CaptionGenerator() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -157,12 +171,12 @@ export function CaptionGenerator() {
   ];
 
   return (
-    <Card className="w-full max-w-4xl mx-auto shadow-lg overflow-hidden border">
+    <Card className="w-full max-w-4xl mx-auto shadow-lg overflow-hidden border bg-white/30 backdrop-blur-lg border-white/50">
       <div className="grid md:grid-cols-2 min-h-[500px]">
         <div
           className={cn(
             "p-6 flex flex-col justify-center transition-all duration-300",
-            photoPreview ? "border-r" : "col-span-full"
+            photoPreview ? "border-r border-white/50" : "col-span-full"
           )}
         >
           <input
@@ -296,7 +310,7 @@ export function CaptionGenerator() {
               )}
             </CardContent>
 
-            <CardFooter>
+            <CardFooter className="flex-col items-stretch space-y-2">
               <Button
                 onClick={handleCopy}
                 disabled={!selectedCaption || isLoading}
@@ -313,6 +327,16 @@ export function CaptionGenerator() {
                   </>
                 )}
               </Button>
+               <Button
+                onClick={() => window.open('https://www.instagram.com', '_blank')}
+                disabled={!selectedCaption || isLoading}
+                className="w-full"
+                size="lg"
+                variant="secondary"
+              >
+                <InstagramIcon className="mr-2" />
+                Open in Instagram
+              </Button>
             </CardFooter>
           </div>
         )}
@@ -320,3 +344,5 @@ export function CaptionGenerator() {
     </Card>
   );
 }
+
+    
