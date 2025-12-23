@@ -157,7 +157,7 @@ export function CaptionGenerator() {
   ];
 
   return (
-    <Card className="w-full max-w-4xl mx-auto shadow-lg overflow-hidden border-none bg-card/80 backdrop-blur-sm">
+    <Card className="w-full max-w-4xl mx-auto shadow-lg overflow-hidden border">
       <div className="grid md:grid-cols-2 min-h-[500px]">
         <div
           className={cn(
