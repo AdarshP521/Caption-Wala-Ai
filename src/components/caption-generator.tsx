@@ -141,16 +141,28 @@ export function CaptionGenerator() {
           text: selectedCaption,
         });
       } else if (navigator.share) {
-         await navigator.share({
-          title: 'Check out my photo!',
-          text: selectedCaption,
-        });
-        // As a fallback for platforms that can't share files but can share text
-        handleCopy();
-        toast({
-            title: "Caption copied!",
-            description: "Your device doesn't support sharing images, but the caption is on your clipboard.",
-        });
+        try {
+          await navigator.share({
+           title: 'Check out my photo!',
+           text: selectedCaption,
+         });
+         // As a fallback for platforms that can't share files but can share text
+         handleCopy();
+         toast({
+             title: "Caption copied!",
+             description: "Your device doesn't support sharing images, but the caption is on your clipboard.",
+         });
+        } catch (error) {
+            // Silently ignore cancel errors
+            if ((error as Error).name !== 'AbortError' && (error as Error).name !== 'NotAllowedError') {
+              console.error('Error sharing:', error);
+               toast({
+                 variant: "destructive",
+                 title: "Sharing failed",
+                 description: "Something went wrong while trying to share.",
+               });
+            }
+        }
       } else {
         // Fallback for desktop browsers that don't support sharing
         handleCopy();
@@ -160,12 +172,15 @@ export function CaptionGenerator() {
         });
       }
     } catch (error) {
-      console.error('Error sharing:', error);
-      toast({
-        variant: "destructive",
-        title: "Sharing failed",
-        description: "Something went wrong while trying to share.",
-      });
+       // Silently ignore cancel errors
+       if ((error as Error).name !== 'AbortError' && (error as Error).name !== 'NotAllowedError') {
+         console.error('Error sharing:', error);
+         toast({
+           variant: "destructive",
+           title: "Sharing failed",
+           description: "Something went wrong while trying to share.",
+         });
+       }
     }
   };
 
