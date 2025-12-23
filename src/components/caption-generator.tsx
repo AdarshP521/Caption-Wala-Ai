@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, type ChangeEvent, type DragEvent } from "react";
+import { useState, useRef, type ChangeEvent, type DragEvent, useEffect } from "react";
 import Image from "next/image";
 import {
   Check,
@@ -40,8 +40,28 @@ export function CaptionGenerator() {
   const [style, setStyle] = useState<string>("default");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [generationProgress, setGenerationProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isLoading) {
+      setGenerationProgress(0);
+      interval = setInterval(() => {
+        setGenerationProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(interval);
+            return prev;
+          }
+          return prev + 5;
+        });
+      }, 200);
+    } else {
+      setGenerationProgress(100);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith("image/")) {
@@ -93,6 +113,7 @@ export function CaptionGenerator() {
       // Don't clear preview on re-generation error
     } else {
       setCaptions(result.captions);
+      setGenerationProgress(100);
     }
   };
 
@@ -129,7 +150,6 @@ export function CaptionGenerator() {
     if (!photoPreview || !selectedCaption) return;
 
     try {
-      // Convert data URI to blob
       const response = await fetch(photoPreview);
       const blob = await response.blob();
       const file = new File([blob], 'photo.png', { type: blob.type });
@@ -142,29 +162,26 @@ export function CaptionGenerator() {
         });
       } else if (navigator.share) {
         try {
-          await navigator.share({
-           title: 'Check out my photo!',
-           text: selectedCaption,
-         });
-         // As a fallback for platforms that can't share files but can share text
-         handleCopy();
-         toast({
-             title: "Caption copied!",
-             description: "Your device doesn't support sharing images, but the caption is on your clipboard.",
-         });
+           await navigator.share({
+            title: 'Check out my photo!',
+            text: selectedCaption,
+          });
+          handleCopy();
+          toast({
+              title: "Caption copied!",
+              description: "Your device doesn't support sharing images, but the caption is on your clipboard.",
+          });
         } catch (error) {
-            // Silently ignore cancel errors
-            if ((error as Error).name !== 'AbortError' && (error as Error).name !== 'NotAllowedError') {
-              console.error('Error sharing:', error);
-               toast({
-                 variant: "destructive",
-                 title: "Sharing failed",
-                 description: "Something went wrong while trying to share.",
-               });
-            }
+             if ((error as Error).name !== 'AbortError' && (error as Error).name !== 'NotAllowedError') {
+               console.error('Error sharing:', error);
+                toast({
+                  variant: "destructive",
+                  title: "Sharing failed",
+                  description: "Something went wrong while trying to share.",
+                });
+             }
         }
       } else {
-        // Fallback for desktop browsers that don't support sharing
         handleCopy();
         toast({
           title: "Sharing not supported",
@@ -172,15 +189,14 @@ export function CaptionGenerator() {
         });
       }
     } catch (error) {
-       // Silently ignore cancel errors
-       if ((error as Error).name !== 'AbortError' && (error as Error).name !== 'NotAllowedError') {
-         console.error('Error sharing:', error);
-         toast({
-           variant: "destructive",
-           title: "Sharing failed",
-           description: "Something went wrong while trying to share.",
-         });
-       }
+        if ((error as Error).name !== 'AbortError' && (error as Error).name !== 'NotAllowedError') {
+          console.error('Error sharing:', error);
+          toast({
+            variant: "destructive",
+            title: "Sharing failed",
+            description: "Something went wrong while trying to share.",
+          });
+        }
     }
   };
 
@@ -320,6 +336,8 @@ export function CaptionGenerator() {
             <CardContent className="flex-grow">
               {isLoading ? (
                 <div className="space-y-4 pt-2">
+                  <Progress value={generationProgress} className="w-full mb-4" />
+                   <p className="text-sm text-muted-foreground text-center">{Math.round(generationProgress)}%</p>
                   {[...Array(5)].map((_, i) => (
                     <div key={i} className="flex items-center space-x-3">
                       <Skeleton className="h-4 w-4 rounded-full" />
