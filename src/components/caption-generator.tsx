@@ -147,6 +147,15 @@ export function CaptionGenerator() {
     }
   };
 
+  const captionStyles = [
+    { value: 'default', label: 'Default' },
+    { value: 'witty', label: 'Witty' },
+    { value: 'poetic', label: 'Poetic' },
+    { value: 'casual', label: 'Casual' },
+    { value: 'professional', label: 'Professional' },
+    { value: 'bold', label: 'Bold' },
+  ];
+
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-lg overflow-hidden border-none bg-card/80 backdrop-blur-sm">
       <div className="grid md:grid-cols-2 min-h-[500px]">
@@ -174,20 +183,15 @@ export function CaptionGenerator() {
                 />
               </div>
                <div className="space-y-2">
-                <Label htmlFor="style-select">Caption Style</Label>
-                <Select value={style} onValueChange={handleStyleChange}>
-                  <SelectTrigger id="style-select" className="w-full">
-                    <SelectValue placeholder="Select a style" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="default">Default</SelectItem>
-                    <SelectItem value="witty">Witty</SelectItem>
-                    <SelectItem value="poetic">Poetic</SelectItem>
-                    <SelectItem value="casual">Casual</SelectItem>
-                    <SelectItem value="professional">Professional</SelectItem>
-                    <SelectItem value="bold">Bold</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Caption Style</Label>
+                <RadioGroup value={style} onValueChange={handleStyleChange} className="grid grid-cols-2 gap-2">
+                  {captionStyles.map(({ value, label }) => (
+                    <div key={value} className="flex items-center space-x-2">
+                      <RadioGroupItem value={value} id={`style-${value}`} />
+                      <Label htmlFor={`style-${value}`} className="font-normal">{label}</Label>
+                    </div>
+                  ))}
+                </RadioGroup>
               </div>
               <Button onClick={resetState} variant="outline" className="w-full">
                 Upload Another Photo
