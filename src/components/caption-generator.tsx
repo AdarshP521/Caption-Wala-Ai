@@ -7,6 +7,7 @@ import {
   Check,
   Copy,
   LoaderCircle,
+  Share2,
   UploadCloud,
   WandSparkles,
 } from "lucide-react";
@@ -138,6 +139,54 @@ export function CaptionGenerator() {
       navigator.clipboard.writeText(selectedCaption);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
+      toast({
+        title: "Copied to clipboard!",
+        description: "The caption is ready to be pasted.",
+      });
+    }
+  };
+  
+  const handleShare = async () => {
+    if (!photoPreview || !selectedCaption) return;
+
+    try {
+      // Convert data URI to blob
+      const response = await fetch(photoPreview);
+      const blob = await response.blob();
+      const file = new File([blob], 'photo.png', { type: blob.type });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Check out my photo!',
+          text: selectedCaption,
+        });
+      } else if (navigator.share) {
+         await navigator.share({
+          title: 'Check out my photo!',
+          text: selectedCaption,
+        });
+        // As a fallback for platforms that can't share files but can share text
+        handleCopy();
+        toast({
+            title: "Caption copied!",
+            description: "Your device doesn't support sharing images, but the caption is on your clipboard.",
+        });
+      } else {
+        // Fallback for desktop browsers that don't support sharing
+        handleCopy();
+        toast({
+          title: "Sharing not supported",
+          description: "Your browser doesn't support this feature, but the caption has been copied for you!",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast({
+        variant: "destructive",
+        title: "Sharing failed",
+        description: "Something went wrong while trying to share.",
+      });
     }
   };
 
@@ -268,7 +317,7 @@ export function CaptionGenerator() {
                     Choose Your Caption
                   </CardTitle>
                   <CardDescription>
-                    Select your favorite and copy it to your clipboard.
+                    Select your favorite and share it with the world.
                   </CardDescription>
                 </>
               )}
@@ -311,22 +360,33 @@ export function CaptionGenerator() {
             </CardContent>
 
             <CardFooter className="flex-col items-stretch space-y-2">
-              <Button
-                onClick={handleCopy}
-                disabled={!selectedCaption || isLoading}
-                className="w-full"
-                size="lg"
-              >
-                {isCopied ? (
-                  <>
-                    <Check /> Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy /> Copy Caption
-                  </>
-                )}
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  onClick={handleCopy}
+                  disabled={!selectedCaption || isLoading}
+                  className="w-full"
+                  size="lg"
+                  variant="outline"
+                >
+                  {isCopied ? (
+                    <>
+                      <Check /> Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy /> Copy
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={handleShare}
+                  disabled={!selectedCaption || isLoading}
+                  className="w-full"
+                  size="lg"
+                >
+                    <Share2 /> Share
+                </Button>
+              </div>
                <Button
                 onClick={() => window.open('https://www.instagram.com', '_blank')}
                 disabled={!selectedCaption || isLoading}
@@ -335,7 +395,7 @@ export function CaptionGenerator() {
                 variant="secondary"
               >
                 <InstagramIcon className="mr-2" />
-                Open in Instagram
+                Post on Instagram
               </Button>
             </CardFooter>
           </div>
@@ -344,5 +404,3 @@ export function CaptionGenerator() {
     </Card>
   );
 }
-
-    
