@@ -16,7 +16,7 @@ export default function Home() {
         <CaptionGenerator />
       </main>
       <footer className="mt-8 text-center text-sm text-muted-foreground">
-        <p>Built with Next.js, Genkit, and ShadCN UI.</p>
+        <p>Designed & Developed By Pandey Adarsh © 2025 - All Right Reserved</p>
       </footer>
     </div>
   );
