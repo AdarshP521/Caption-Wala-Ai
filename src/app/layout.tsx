@@ -3,7 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "CaptionAI",
+  title: "Caption.AI",
   description: "Generate creative captions for your photos with AI.",
 };
 
